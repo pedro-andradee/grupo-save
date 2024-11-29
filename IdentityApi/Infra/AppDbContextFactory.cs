@@ -13,8 +13,7 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
     public AppDbContext CreateDbContext(string[] args)
     {
         var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-        optionsBuilder.UseMySql("Server=localhost;port=3306;Database=IdentityDb;user=root;password=123456789;",
-         ServerVersion.AutoDetect("Server=localhost;port=3306;Database=IdentityDb;user=root;password=123456789;"));
+        optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=MyDatabase;Username=myuser;Password=mypassword");
 
         return new AppDbContext(optionsBuilder.Options);
     }

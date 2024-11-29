@@ -4,71 +4,68 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IdentityApi.Infra.Repositories
 {
-    public class SeriesRepository : ISeriesRepository
+    public class DisciplinaRepository : IDisciplinaRepository
     {
         private readonly AppDbContext _context;
-        private readonly DbSet<Series> _dbSet;
+        private readonly DbSet<Disciplina> _dbSet;
 
-        public SeriesRepository(AppDbContext context)
+        public DisciplinaRepository(AppDbContext context)
         {
             _context = context;
-            _dbSet = context.Set<Series>();
+            _dbSet = context.Set<Disciplina>();
         }
 
-        public async Task<bool> CreateAsync(Series series)
+        public async Task<bool> CreateAsync(Disciplina disciplina)
         {
-            _dbSet.Add(series);
+            _dbSet.Add(disciplina);
             return await _context.SaveChangesAsync() > 0;
         }
 
         public async Task<bool> DeleteAsync(Guid id)
         {
-            var serie = await _dbSet.FindAsync(id);
-            if (serie == null)
+            var disciplina = await _dbSet.FindAsync(id);
+            if (disciplina == null)
             {
                 return false;
             }
-            _dbSet.Remove(serie);
+            _dbSet.Remove(disciplina);
             return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task<List<Series>> GetAllAsync(string userId)
+        public async Task<List<Disciplina>> GetAllAsync()
         {
-            _dbSet.Where(s => s.UserId == userId);
             return await _dbSet.ToListAsync();
         }
 
-        public async Task<Series> GetByIdAsync(Guid id, string userId)
+        public async Task<Disciplina> GetByIdAsync(Guid id)
         {
-            _dbSet.Where(s => s.UserId == userId && s.Id == id);
-            return await _dbSet.FirstOrDefaultAsync();
+            return await _dbSet.FindAsync(id);
         }
 
-        public async Task<Series> UpdateAsync(Series series)
+        public async Task<Disciplina> UpdateAsync(Disciplina disciplina)
         {
-            if (series == null)
+            if (disciplina == null)
             {
                 return null;
             }
 
             // Tenta atualizar diretamente
-            var existingSeries = await _dbSet.FindAsync(series.Id);
-            if (existingSeries == null)
+            var existingDisciplina = await _dbSet.FindAsync(disciplina.Id);
+            if (existingDisciplina == null)
             {
                 return null;
             }
 
-            existingSeries.Title = series.Title;
-            existingSeries.CurrentEpisode = series.CurrentEpisode;
-            existingSeries.CurrentSeason = series.CurrentSeason;
-            existingSeries.Genre = series.Genre;
-            existingSeries.IsCompleted = series.IsCompleted;
+            existingDisciplina.Title = disciplina.Title;
+            existingDisciplina.Semestre = disciplina.Semestre;
+            existingDisciplina.Curso = disciplina.Curso;
+            existingDisciplina.Professor = disciplina.Professor;
 
-            _dbSet.Update(existingSeries);
+            _dbSet.Update(existingDisciplina);
 
             await _context.SaveChangesAsync();
 
-            return series;
+            return existingDisciplina;
         }
     }
 }

@@ -19,8 +19,7 @@ var builder = WebApplication.CreateBuilder(args);
 var connString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseMySql(connString,
-    ServerVersion.AutoDetect(connString)));
+    options.UseNpgsql(connString));
 
 builder.Services.AddIdentity<User, IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>()
@@ -30,11 +29,11 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<TokenService>();
-builder.Services.AddScoped<SeriesService>();
-builder.Services.AddScoped<ISeriesRepository, SeriesRepository>();
+builder.Services.AddScoped<DisciplinaService>();
+builder.Services.AddScoped<IDisciplinaRepository, DisciplinaRepository>();
 
 
-builder.Services.AddAuthentication(options =>
+builder.Services.AddAuthentication(/* options =>
     {
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     })
@@ -51,7 +50,7 @@ builder.Services.AddAuthentication(options =>
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("J98DSA9A8HJDAS98KASD")),
             RoleClaimType = "resource_access",
         };
-    });
+    } */);
 
 builder.Services.AddAuthorization(options =>
 {
@@ -65,7 +64,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
     // Configuração de segurança para JWT
-    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    /* options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
         Type = SecuritySchemeType.Http,
@@ -88,7 +87,7 @@ builder.Services.AddSwaggerGen(options =>
             },
             new string[] {}
         }
-    });
+    }); */
 });
 
 var app = builder.Build();
