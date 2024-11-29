@@ -1,0 +1,60 @@
+@model IEnumerable<DisciplinaDto>
+@{
+    ViewData["Title"] = "Lista de Disciplinas";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+</head>
+
+
+<body>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h1>Disciplinas</h1>
+        <button type="button" class="btn btn-dark  btn-sm">
+            <a style="color: inherit; text-decoration: none;" asp-controller="Disciplina" asp-action="Create">
+                Criar
+                Nova Disciplina
+            </a>
+        </button>
+
+    </div>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Nome</th>
+                <th scope="col">Semestre</th>
+                <th scope="col">Curso</th>
+                <th scope="col">Professor(a)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var disciplina in Model)
+            {
+                <tr>
+                    <td>@disciplina.Title</td>
+                    <td>@disciplina.Semestre</td>
+                    <td>@disciplina.Curso</td>
+                    <td>@disciplina.Professor</td>
+                    <td>
+                        <button type="button" class="btn btn-warning btn-sm" style="margin-right: 1rem;">
+                            <a style="color: inherit; text-decoration: none;" asp-controller="Disciplina"
+                                asp-action="Edit" asp-route-id="@disciplina.Id">
+                                Editar
+                            </a>
+                        </button>
+                        <button type="button" class="btn btn-danger btn-sm">
+                            <a style="color: inherit; text-decoration: none;" asp-controller="Disciplina"
+                                asp-action="Delete" asp-route-id="@disciplina.Id">
+                                Excluir
+                            </a>
+                        </button>
+                        @* <button asp-controller="Disciplina" asp-action="Delete" asp-route-id="@disciplina.Id"
+                            type="button" class="btn btn-danger btn-sm">Excluir</button> *@
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</body>

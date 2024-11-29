@@ -1,0 +1,22 @@
+@model DisciplinaDto
+@{
+    ViewData["Title"] = "Excluir Disciplina";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Excluir Disciplina</h1>
+
+<p>Tem certeza que deseja excluir a disciplina <strong>@Model.Title</strong>?</p>
+
+<form method="Post" asp-controller="Disciplina" asp-action="Delete" asp-route-id="@Model.Id">
+    <div style="display: flex; gap: 1rem; align-items: center;">
+        <button type="button" class="btn btn-warning btn-sm">
+            <a style="color: inherit; text-decoration: none;" asp-controller="Disciplina" asp-action="Index">
+                Cancelar
+            </a>
+        </button>
+        <div>
+            <input type="submit" value="Excluir" class="btn btn-danger btn-sm" />
+        </div>
+    </div>
+</form>

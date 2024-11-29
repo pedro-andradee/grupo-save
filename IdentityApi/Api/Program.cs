@@ -32,6 +32,7 @@ builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<DisciplinaService>();
 builder.Services.AddScoped<IDisciplinaRepository, DisciplinaRepository>();
 
+builder.Services.AddControllersWithViews();
 
 builder.Services.AddAuthentication(/* options =>
     {
@@ -96,7 +97,9 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 //app.UseHttpsRedirection();
-
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 // Adicionar autenticação antes da autorização
 app.UseAuthentication();
 app.UseAuthorization();

@@ -1,85 +1,114 @@
-using Api.AccessPolicies;
 using Application.Dtos;
 using IdentityApi.Application.Dtos;
 using IdentityApi.Application.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityApi.Api.Controllers;
 
-[Route("api/disciplinas")]
-[ApiController]
-public class DisciplinaController : ControllerBase
+public class DisciplinaController : Controller
 {
     private readonly DisciplinaService _disciplinaService;
 
-    public DisciplinaController(DisciplinaService userService)
+    public DisciplinaController(DisciplinaService disciplinaService)
     {
-        _disciplinaService = userService;
-    }
-
-    [HttpPost]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreateDisciplina([FromBody] CreateDisciplinaDto request)
-    {
-        var success = await _disciplinaService.CreateDisciplinaAsync(request);
-        if (success is false)
-        {
-            return BadRequest("Ocorreu um erro ao criar a disciplina.");
-        }
-        return Created();
+        _disciplinaService = disciplinaService;
     }
 
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetDisciplinas()
+    public async Task<IActionResult> Index()
     {
         var disciplinas = await _disciplinaService.GetDisciplinasAsync();
-        if (disciplinas == null)
-        {
-            return NotFound("Disciplinas não encontradas.");
-        }
-        return Ok(disciplinas);
+        return View(disciplinas);
     }
 
-    [HttpGet("{id}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetDisciplinaById(Guid id)
+    [HttpPost]
+    public async Task<IActionResult> Create(CreateDisciplinaDto createDisciplinaDto)
     {
-        var series = await _disciplinaService.GetDisciplinaByIdAsync(id);
-        if (series == null)
+        if (!ModelState.IsValid)
+        {
+            return View(createDisciplinaDto);
+        }
+
+        var success = await _disciplinaService.CreateDisciplinaAsync(createDisciplinaDto);
+        if (!success)
+        {
+            ModelState.AddModelError("", "Ocorreu um erro ao criar a disciplina.");
+            return View(createDisciplinaDto);
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpGet]
+    public IActionResult Create()
+    {
+        return View();
+    }
+
+    [HttpGet("Detalhes/{id}")]
+    public async Task<IActionResult> Details(Guid id)
+    {
+        var disciplina = await _disciplinaService.GetDisciplinaByIdAsync(id);
+        if (disciplina == null)
+        {
+            return NotFound();
+        }
+
+        return View(disciplina);
+    }
+
+    [HttpGet("Editar/{id}")]
+    public async Task<IActionResult> Edit(Guid id)
+    {
+        var disciplina = await _disciplinaService.GetDisciplinaByIdAsync(id);
+        if (disciplina == null)
+        {
+            return NotFound();
+        }
+
+        return View(disciplina);
+    }
+
+
+    [HttpPost("Editar/{id}")]
+    public async Task<IActionResult> Edit(Guid id, DisciplinaDto request)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(request);
+        }
+
+        var success = await _disciplinaService.UpdateDisciplinaAsync(request);
+        if (!success)
+        {
+            ModelState.AddModelError("", "Ocorreu um erro ao atualizar a disciplina.");
+            return View(request);
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpGet("Excluir/{id}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        var disciplina = await _disciplinaService.GetDisciplinaByIdAsync(id);
+        if (disciplina == null)
         {
             return NotFound("Disciplina não encontrada.");
         }
-        return Ok(series);
+
+        return View(disciplina);
     }
 
-    [HttpPut]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> UpdateDisciplina([FromBody] DisciplinaDto request)
-    {
-        var success = await _disciplinaService.UpdateDisciplinaAsync(request);
-        if (success is false)
-        {
-            return BadRequest("Aconteceu um erro ao atualizar a disciplina.");
-        }
-        return Ok();
-    }
-
-    [HttpDelete("{id}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> DeleteDisciplina(Guid id)
+    [HttpPost("Excluir/{id}")]
+    public async Task<IActionResult> Delete(Guid id, DisciplinaDto request)
     {
         var success = await _disciplinaService.DeleteDisciplinaAsync(id);
-        if (success is false)
+        if (!success)
         {
-            return BadRequest("Aconteceu um erro ao deletar a disciplina.");
+            return BadRequest("Ocorreu um erro ao deletar a disciplina.");
         }
-        return NoContent();
+
+        return RedirectToAction(nameof(Index));
     }
 }
